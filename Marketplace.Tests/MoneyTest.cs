@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using Marketplace.Domain;
 using Xunit;
@@ -6,28 +9,115 @@ namespace Marketplace.Tests
 {
     public class MoneyTest
     {
+        private static readonly ICurrencyLookup CurrencyLookup = new FakeCurrencyLookup();
+
         [Fact]
-        public void Money_objects_with_the_same_amount_should_be_equal()
+        public void Two_of_same_amount_should_be_equal()
         {
-            var firstAmount = Money.FromDecimal(5);
-            var secondAmount = Money.FromDecimal(5);
+            var firstAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            var secondAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            Assert.Equal(firstAmount, secondAmount);
+        }
+
+        [Fact]
+        public void Two_of_same_amount_but_different_currencies_should_not_be_equal()
+        {
+            var firstAmount = Money.FromDecimal(5, "USD", CurrencyLookup);
+            var secondAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            Assert.NotEqual(firstAmount, secondAmount);
+        }
+
+        [Fact]
+        public void FromString_and_FromDecimal_should_be_equal()
+        {
+            var firstAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            var secondAmount = Money.FromString("5.00", "EUR", CurrencyLookup);
             Assert.Equal(firstAmount, secondAmount);
         }
 
         [Fact]
         public void Sum_of_money_gives_full_amount()
         {
-            var coin_1 = Money.FromDecimal(1);
-            var coin_2 = Money.FromDecimal(2);
-            var coin_3 = Money.FromDecimal(2);
-            Money bank_note = Money.FromDecimal(5);
-            Assert.Equal(bank_note, coin_1 + coin_2 + coin_3);
+            var coin1 = Money.FromDecimal(1, "EUR", CurrencyLookup);
+            var coin2 = Money.FromDecimal(2, "EUR", CurrencyLookup);
+            var coin3 = Money.FromDecimal(2, "EUR", CurrencyLookup);
+
+            var banknote = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            Assert.Equal(banknote, coin1 + coin2 + coin3);
         }
 
         [Fact]
-        public void Difference_of_money_gives_difference()
+        public void Unused_currency_should_not_be_allowed()
         {
-            Assert.Equal(Money.FromDecimal(1), Money.FromDecimal(3) - Money.FromDecimal(2));
+            Assert.Throws<ArgumentException>(() => Money.FromDecimal(100, "DEM", CurrencyLookup));
+        }
+
+        [Fact]
+        public void Unknown_currency_should_not_be_allowed()
+        {
+            Assert.Throws<ArgumentException>(() => Money.FromDecimal(100, "WHAT?", CurrencyLookup));
+        }
+
+        [Fact]
+        public void Throw_when_too_many_decimal_places()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Money.FromDecimal(100.123m, "EUR", CurrencyLookup));
+        }
+
+        [Fact]
+        public void Throws_on_adding_different_currencies()
+        {
+            var firstAmount = Money.FromDecimal(5, "USD", CurrencyLookup);
+            var secondAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+
+            Assert.Throws<CurrencyMismatchException>(() => firstAmount + secondAmount);
+        }
+
+        [Fact]
+        public void Throws_on_subtracting_different_currencies()
+        {
+            var firstAmount = Money.FromDecimal(5, "USD", CurrencyLookup);
+            var secondAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+
+            Assert.Throws<CurrencyMismatchException>(() => firstAmount - secondAmount);
+        }
+    }
+
+    internal class FakeCurrencyLookup : ICurrencyLookup
+    {
+        private static readonly IEnumerable<Currency> _currencies =
+            new[]
+            {
+                new Currency
+                {
+                    CurrencyCode = "EUR",
+                    DecimalPlaces = 2,
+                    InUse = true
+                },
+                new Currency
+                {
+                    CurrencyCode = "USD",
+                    DecimalPlaces = 2,
+                    InUse = true
+                },
+                new Currency
+                {
+                    CurrencyCode = "JPY",
+                    DecimalPlaces = 0,
+                    InUse = true
+                },
+                new Currency
+                {
+                    CurrencyCode = "DEM",
+                    DecimalPlaces = 2,
+                    InUse = false
+                }
+            };
+
+        public Currency FindCurrency(string currencyCode)
+        {
+            var currency = _currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
+            return currency ?? Currency.None;
         }
     }
 }
