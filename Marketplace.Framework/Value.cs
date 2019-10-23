@@ -7,12 +7,12 @@ using System.Reflection;
 
 namespace Marketplace.Framework
 {
-    public abstract class Value<T> where T : Value<T>
+    public abstract class Value<T> : IEquatable<T> where T : Value<T>
     {
         [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
         private static readonly Member[] Members = GetMembers().ToArray();
 
-        public override bool Equals(object other)
+        public bool Equals(T other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
