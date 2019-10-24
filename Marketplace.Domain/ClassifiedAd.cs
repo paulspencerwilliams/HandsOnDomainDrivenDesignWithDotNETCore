@@ -7,7 +7,7 @@ namespace Marketplace.Domain
     public class ClassifiedAd : Entity<ClassifiedAdId>
 
     {
-        public ClassifiedAdId Id { get; }
+        public ClassifiedAdId Id { get; private set; }
         public ClassifiedAdState State { get; private set; }
 
         private UserId _ownerId;
@@ -17,44 +17,34 @@ namespace Marketplace.Domain
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
-            Id = id;
-            _ownerId = ownerId;
-            State = ClassifiedAdState.Inactive;
-            EnsureValidState();
-            Raise(new Events.ClassifiedAdCreated
+            Apply(new Events.ClassifiedAdCreated
             {
-                Id = Id,
-                OwnerId = _ownerId
+                Id = id,
+                OwnerId = ownerId
             });
         }
 
         public void SetTitle(ClassifiedAdTitle title)
         {
-            _title = title;
-            EnsureValidState();
-            Raise(new Events.ClassifiedAdTitleChanged
+            Apply(new Events.ClassifiedAdTitleChanged
             {
                 Id = Id,
-                Title = _title
+                Title = title
             });
         }
 
         public void UpdateText(ClassifiedAdText text)
         {
-            _text = text;
-            EnsureValidState();
-            Raise(new Events.ClassifiedAdTextUpdated
+            Apply(new Events.ClassifiedAdTextUpdated
             {
                 Id = Id,
-                Text = _text 
+                Text = text
             });
         }
 
         public void UpdatePrice(Price price)
         {
-            _price = price;
-            EnsureValidState();
-            Raise(new Events.ClassifiedAdPriceUpdated
+            Apply(new Events.ClassifiedAdPriceUpdated
             {
                 Id = Id,
                 Price = price.Amount,
@@ -64,9 +54,31 @@ namespace Marketplace.Domain
 
         public void RequestToPublish()
         {
-            State = ClassifiedAdState.PendingReview;
-            EnsureValidState();
-            Raise(new Events.ClassifiedAdSentForReview{Id = Id});
+            Apply(new Events.ClassifiedAdSentForReview {Id = Id});
+        }
+
+        protected override void When(object @event)
+        {
+            switch (@event)
+            {
+                case Events.ClassifiedAdCreated e:
+                    Id = new ClassifiedAdId(e.Id);
+                    _ownerId = new UserId(e.OwnerId);
+                    State = ClassifiedAdState.Inactive;
+                    break;
+                case Events.ClassifiedAdTitleChanged e:
+                    _title = new ClassifiedAdTitle(e.Title);
+                    break;
+                case Events.ClassifiedAdTextUpdated e:
+                    _text = new ClassifiedAdText(e.Text);
+                    break;
+                case Events.ClassifiedAdPriceUpdated e:
+                    _price = new Price(e.Price, e.CurrencyCode);
+                    break;
+                case Events.ClassifiedAdSentForReview e:
+                    State = ClassifiedAdState.PendingReview;
+                    break;
+            }
         }
 
         protected override void EnsureValidState()
