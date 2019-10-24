@@ -18,15 +18,18 @@ namespace Marketplace.Domain
             return new ClassifiedAdTitle(Regex.Replace(supportedTagsReplaced, "<.*?>", String.Empty));
         }
 
-        private readonly string _value;
-
         private ClassifiedAdTitle(string value)
         {
             if (value.Length > 100)
             {
                 throw new ArgumentOutOfRangeException("Title cannot be longer than 100 characters", nameof(value));
             }
-            _value = value;
+            Value = value;
         }
+        
+        public static implicit operator string(ClassifiedAdTitle title) =>
+            title.Value;
+
+        public string Value { get; }
     }
 }

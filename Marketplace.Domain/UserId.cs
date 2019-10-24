@@ -5,7 +5,9 @@ namespace Marketplace.Domain
 {
     public class UserId : Value<UserId>
     {
-        private readonly Guid _value;
-        public UserId(Guid value) => _value = value;
+        public UserId(Guid value) => Value = value;
+
+        public static implicit operator Guid(UserId self) => self.Value;
+        public Guid Value { get; }
     }
 }

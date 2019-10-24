@@ -21,30 +21,52 @@ namespace Marketplace.Domain
             _ownerId = ownerId;
             State = ClassifiedAdState.Inactive;
             EnsureValidState();
+            Raise(new Events.ClassifiedAdCreated
+            {
+                Id = Id,
+                OwnerId = _ownerId
+            });
         }
 
         public void SetTitle(ClassifiedAdTitle title)
         {
             _title = title;
             EnsureValidState();
+            Raise(new Events.ClassifiedAdTitleChanged
+            {
+                Id = Id,
+                Title = _title
+            });
         }
 
         public void UpdateText(ClassifiedAdText text)
         {
             _text = text;
             EnsureValidState();
+            Raise(new Events.ClassifiedAdTextUpdated
+            {
+                Id = Id,
+                Text = _text 
+            });
         }
 
         public void UpdatePrice(Price price)
         {
             _price = price;
             EnsureValidState();
+            Raise(new Events.ClassifiedAdPriceUpdated
+            {
+                Id = Id,
+                Price = price.Amount,
+                CurrencyCode = price.Currency.CurrencyCode
+            });
         }
 
         public void RequestToPublish()
         {
             State = ClassifiedAdState.PendingReview;
             EnsureValidState();
+            Raise(new Events.ClassifiedAdSentForReview{Id = Id});
         }
 
         protected override void EnsureValidState()
