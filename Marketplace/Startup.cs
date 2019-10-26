@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.Api;
+using Marketplace.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Raven.Client.Documents;
 
 namespace Marketplace
 {
@@ -27,12 +23,28 @@ namespace Marketplace
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var store = new DocumentStore
+            {
+                Urls = new[] {"http://localhost:8080"},
+                Database = "Marketplace_Chapter6",
+                Conventions =
+                {
+                    FindIdentityProperty = m => m.Name == "_databaseId"
+                }
+            };
+            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>(
+                (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
+            store.Initialize();
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
-            services.AddSingleton(new ClassifiedAdsApplicationService());
+            services.AddTransient(c => store.OpenAsyncSession());
+            services.AddScoped<IEntityStore, ClassifiedAdEntityStore>();
+            services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
+            services.AddSingleton<ClassifiedAdsApplicationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

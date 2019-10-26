@@ -5,7 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="RavenDB.Client" Version="4.2.4" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Marketplace.Domain\Marketplace.Domain.csproj" />
     </ItemGroup>
 
 </Project>

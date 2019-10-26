@@ -10,10 +10,10 @@ namespace Marketplace.Domain
         public ClassifiedAdId Id { get; private set; }
         public ClassifiedAdState State { get; private set; }
 
-        private UserId _ownerId;
-        private ClassifiedAdTitle _title;
-        private ClassifiedAdText _text;
-        private Price _price;
+        public UserId OwnerId { get; private set; }
+        public ClassifiedAdTitle Title { get; private set; }
+        public ClassifiedAdText Text { get; private set; }
+        public Price Price { get; private set; }
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
@@ -63,17 +63,17 @@ namespace Marketplace.Domain
             {
                 case Events.ClassifiedAdCreated e:
                     Id = new ClassifiedAdId(e.Id);
-                    _ownerId = new UserId(e.OwnerId);
+                    OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     break;
                 case Events.ClassifiedAdTitleChanged e:
-                    _title = new ClassifiedAdTitle(e.Title);
+                    Title = new ClassifiedAdTitle(e.Title);
                     break;
                 case Events.ClassifiedAdTextUpdated e:
-                    _text = new ClassifiedAdText(e.Text);
+                    Text = new ClassifiedAdText(e.Text);
                     break;
                 case Events.ClassifiedAdPriceUpdated e:
-                    _price = new Price(e.Price, e.CurrencyCode);
+                    Price = new Price(e.Price, e.CurrencyCode);
                     break;
                 case Events.ClassifiedAdSentForReview e:
                     State = ClassifiedAdState.PendingReview;
@@ -85,17 +85,17 @@ namespace Marketplace.Domain
         {
             var valid =
                 Id != null &&
-                _ownerId != null &&
+                OwnerId != null &&
                 (State switch
                 {
                     ClassifiedAdState.PendingReview =>
-                    _title != null
-                    && _text != null
-                    && _price?.Amount > 0,
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0,
                     ClassifiedAdState.Active =>
-                    _title != null
-                    && _text != null
-                    && _price?.Amount > 0
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0
                     && ApprovedBy != null,
                     _ => true
                 });
