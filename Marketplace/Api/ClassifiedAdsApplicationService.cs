@@ -7,10 +7,10 @@ namespace Marketplace.Api
 {
     public partial class ClassifiedAdsApplicationService
     {
-        private readonly IEntityStore _store;
+        private readonly IClassifiedAdRepository _store;
         private readonly ICurrencyLookup _currencyLookup;
 
-        public ClassifiedAdsApplicationService(IEntityStore store, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsApplicationService(IClassifiedAdRepository store, ICurrencyLookup currencyLookup)
         {
             _store = store;
             _currencyLookup = currencyLookup;

@@ -3,7 +3,7 @@ using Marketplace.Domain;
 
 namespace Marketplace.Api
 {
-    public interface IEntityStore
+    public interface IClassifiedAdRepository
     {
         Task<bool> Exists(ClassifiedAdId id);
 

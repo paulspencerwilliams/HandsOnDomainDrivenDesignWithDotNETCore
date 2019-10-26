@@ -42,7 +42,7 @@ namespace Marketplace
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
             services.AddTransient(c => store.OpenAsyncSession());
-            services.AddScoped<IEntityStore, ClassifiedAdEntityStore>();
+            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
             services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
             services.AddSingleton<ClassifiedAdsApplicationService>();
         }

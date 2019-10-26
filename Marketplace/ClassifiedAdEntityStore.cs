@@ -6,12 +6,12 @@ using Raven.Client.Documents.Session;
 
 namespace Marketplace
 {
-    public class ClassifiedAdEntityStore 
-        : IEntityStore, IDisposable
+    public class ClassifiedAdRepository 
+        : IClassifiedAdRepository, IDisposable
     {
         private readonly IAsyncDocumentSession _session;
 
-        public ClassifiedAdEntityStore(IAsyncDocumentSession session) 
+        public ClassifiedAdRepository(IAsyncDocumentSession session) 
             => _session = session;
 
         public Task<bool> Exists(ClassifiedAdId id) 
