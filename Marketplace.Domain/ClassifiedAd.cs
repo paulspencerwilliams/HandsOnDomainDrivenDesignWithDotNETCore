@@ -4,17 +4,16 @@ using Marketplace.Tests;
 
 namespace Marketplace.Domain
 {
-    public class ClassifiedAd : Entity<ClassifiedAdId>
-
+    public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
         public ClassifiedAdId Id { get; private set; }
-        public ClassifiedAdState State { get; private set; }
-
         public UserId OwnerId { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
         public ClassifiedAdText Text { get; private set; }
         public Price Price { get; private set; }
-
+        public ClassifiedAdState State { get; private set; }
+        public UserId ApprovedBy { get; private set; }
+        
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
             Apply(new Events.ClassifiedAdCreated
@@ -105,8 +104,6 @@ namespace Marketplace.Domain
                 throw new InvalidEntityStateException(this, $"Post-checks failed in state {State}");
             }
         }
-
-        public UserId ApprovedBy { get; private set; }
 
         public enum ClassifiedAdState
         {
