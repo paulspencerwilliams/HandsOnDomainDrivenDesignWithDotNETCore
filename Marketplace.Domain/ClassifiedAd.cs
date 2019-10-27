@@ -97,6 +97,8 @@ namespace Marketplace.Domain
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
+                    Title = ClassifiedAdTitle.NoTitle;
+                    Text = ClassifiedAdText.NoText;
                     ClassifiedAdId = e.Id;
                     break;
                 case Events.ClassifiedAdTitleChanged e:

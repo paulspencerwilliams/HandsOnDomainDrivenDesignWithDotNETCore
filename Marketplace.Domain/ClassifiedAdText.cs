@@ -11,6 +11,8 @@ namespace Marketplace.Domain
         
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
-        
+     
+        public static ClassifiedAdText NoText = new ClassifiedAdText();
+
     }
 }
