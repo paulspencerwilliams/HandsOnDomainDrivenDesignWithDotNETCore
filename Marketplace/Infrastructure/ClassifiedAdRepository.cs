@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.Api;
 using Marketplace.Domain;
 using Raven.Client.Documents.Session;
 
-namespace Marketplace
+namespace Marketplace.Infrastructure
 {
     public class ClassifiedAdRepository 
         : IClassifiedAdRepository, IDisposable

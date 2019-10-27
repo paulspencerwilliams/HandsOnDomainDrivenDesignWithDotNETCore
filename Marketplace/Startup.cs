@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Marketplace.Api;
 using Marketplace.Domain;
+using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

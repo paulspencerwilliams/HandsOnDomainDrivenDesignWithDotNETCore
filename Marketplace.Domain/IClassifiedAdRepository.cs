@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Marketplace.Domain;
 
-namespace Marketplace.Api
+namespace Marketplace.Domain
 {
     public interface IClassifiedAdRepository
     {
