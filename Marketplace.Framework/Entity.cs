@@ -10,6 +10,10 @@ namespace Marketplace.Framework
 
         protected Entity(Action<object> applier) => this._applier = applier;
 
+        protected Entity()
+        {
+        }
+
         protected void Apply(object @event)
         {
             When(@event);

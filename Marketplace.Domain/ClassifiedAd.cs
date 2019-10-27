@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Marketplace.Framework;
@@ -9,11 +9,7 @@ namespace Marketplace.Domain
     public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
         // Properties to handle the persistence
-        private string DbId
-        {
-            get => $"ClassifiedAd/{Id.Value}";
-            set {}
-        }
+        public Guid ClassifiedAdId { get; private set; }
         
         // Aggregate state properties
         public UserId OwnerId { get; private set; }
@@ -102,6 +98,7 @@ namespace Marketplace.Domain
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
+                    ClassifiedAdId = e.Id;
                     break;
                 case Events.ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
@@ -159,5 +156,7 @@ namespace Marketplace.Domain
             Inactive,
             MarkedAsSold
         }
+
+        public ClassifiedAd() {}
     }
 }

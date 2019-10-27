@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  postgres:
+    image: kiasaki/alpine-postgres:9.5
+    environment:
+      - POSTGRES_USER=ddd
+      - POSTGRES_PASSWORD=book
+      - POSTGRES_DB=marketplace
+    ports:
+      - '5432:5432'
