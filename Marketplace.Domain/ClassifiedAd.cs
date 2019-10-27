@@ -60,7 +60,6 @@ namespace Marketplace.Domain
 
         public void AddPicture(Uri pictureUri, PictureSize size)
         {
-            var wat = Pictures.Count;
             Apply(new Events.PictureAddedToAClassifiedAd
             {
                 PictureId = new Guid(),
