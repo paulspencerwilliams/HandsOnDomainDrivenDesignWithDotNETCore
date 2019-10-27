@@ -9,6 +9,6 @@ namespace Marketplace.Api
 
         Task<ClassifiedAd> Load(ClassifiedAdId id);
 
-        Task Save(ClassifiedAd entity);
+        Task Add(ClassifiedAd entity);
     }
 }
