@@ -29,6 +29,23 @@ namespace Marketplace.Domain
             public string CurrencyCode { get; set; }
         }
 
+        public class PictureAddedToAClassifiedAd
+        {
+            public ClassifiedAdId ClassifiedAdId { get; set; }
+            public Guid PictureId { get; set; }
+            public string Uri { get; set; }
+            public int Height { get; set; }
+            public int Width { get; set; }
+            public int Order { get; set; }
+        }
+
+        public class ClassifiedAdPictureResized
+        {
+            public Guid PictureId { get; set; }
+            public int Height { get; set; }
+            public int Width { get; set; }
+        }
+
         public class ClassifiedAdSentForReview
         {
             public Guid Id { get; set; }

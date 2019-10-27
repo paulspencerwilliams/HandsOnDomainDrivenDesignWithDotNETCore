@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Marketplace.Framework
 {
-    public abstract class AggregateRoot<TId> where TId : Value<TId>
+    public abstract class AggregateRoot<TId> : IInternalEventHandler where TId : Value<TId>
     {
         public TId Id { get; protected set; }
 
@@ -23,5 +23,12 @@ namespace Marketplace.Framework
 
         public void ClearChanges() => _changes.Clear();
         protected abstract void EnsureValidState();
+
+        public void ApplyToEntity(
+            IInternalEventHandler entity,
+            object @event
+        ) => entity?.Handle(@event);
+
+        void IInternalEventHandler.Handle(object @event) => When(@event);
     }
 }

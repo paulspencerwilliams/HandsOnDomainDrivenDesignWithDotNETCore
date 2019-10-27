@@ -21,6 +21,7 @@ namespace Marketplace.Tests
             _classifiedAd.SetTitle(ClassifiedAdTitle.FromString("Test ad"));
             _classifiedAd.UpdateText(ClassifiedAdText.FromString("Please buy my stuff"));
             _classifiedAd.UpdatePrice(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
+            _classifiedAd.AddPicture(new Uri("http://www.example.com"), new PictureSize(1000, 700));
             _classifiedAd.RequestToPublish();
             
             Assert.Equal(ClassifiedAd.ClassifiedAdState.PendingReview, _classifiedAd.State);
