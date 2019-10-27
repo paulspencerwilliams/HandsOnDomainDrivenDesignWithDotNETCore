@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Marketplace.Framework;
@@ -8,7 +8,14 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
-        public ClassifiedAdId Id { get; private set; }
+        // Properties to handle the persistence
+        private string DbId
+        {
+            get => $"ClassifiedAd/{Id.Value}";
+            set {}
+        }
+        
+        // Aggregate state properties
         public UserId OwnerId { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
         public ClassifiedAdText Text { get; private set; }

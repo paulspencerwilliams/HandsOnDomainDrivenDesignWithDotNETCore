@@ -2,18 +2,22 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.Contracts;
 using Marketplace.Domain;
+using Marketplace.Framework;
 
 namespace Marketplace.Api
 {
     public partial class ClassifiedAdsApplicationService
     {
-        private readonly IClassifiedAdRepository _store;
+        private readonly IClassifiedAdRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrencyLookup _currencyLookup;
 
-        public ClassifiedAdsApplicationService(IClassifiedAdRepository store, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsApplicationService(IClassifiedAdRepository repository, IUnitOfWork unitOfWork,
+            ICurrencyLookup currencyLookup)
         {
-            _store = store;
+            _repository = repository;
             _currencyLookup = currencyLookup;
+            _unitOfWork = unitOfWork;
         }
 
         public Task Handle(object command) =>
@@ -44,7 +48,7 @@ namespace Marketplace.Api
 
         private async Task HandleCreate(ClassifiedAds.V1.Create cmd)
         {
-            if (await _store.Exists(cmd.Id.ToString()))
+            if (await _repository.Exists(cmd.Id.ToString()))
             {
                 throw new InvalidOperationException($"Entity with id {cmd.Id} already exists");
             }
@@ -53,12 +57,13 @@ namespace Marketplace.Api
                 new ClassifiedAdId(cmd.Id),
                 new UserId(cmd.OwnerId));
 
-            await _store.Add(classifiedAd);
+            await _repository.Add(classifiedAd);
+            await _unitOfWork.Commit();
         }
 
         private async Task HandleUpdate(Guid classifiedAdId, Action<ClassifiedAd> operation)
         {
-            var classifiedAd = await _store.Load(classifiedAdId.ToString());
+            var classifiedAd = await _repository.Load(classifiedAdId.ToString());
             if (classifiedAd == null)
             {
                 throw new InvalidOperationException($"Entity with id {classifiedAdId} cannot be found");
@@ -66,7 +71,7 @@ namespace Marketplace.Api
             
             operation(classifiedAd);
 
-            await _store.Add(classifiedAd);
+            await _unitOfWork.Commit();
         }
     }
 }

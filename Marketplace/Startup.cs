@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Marketplace.Api;
 using Marketplace.Domain;
+using Marketplace.Framework;
 using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,32 +31,27 @@ namespace Marketplace
                 Database = "Marketplace_Chapter6",
                 Conventions =
                 {
-                    FindIdentityProperty = m => m.Name == "_databaseId"
+                    FindIdentityProperty = m => m.Name == "DbId"
                 }
             };
-            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>(
-                (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
+            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>((dbName, entity) =>
+                Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
             store.Initialize();
             
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-            });
-            services.AddTransient(c => store.OpenAsyncSession());
-            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
             services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
-            services.AddSingleton<ClassifiedAdsApplicationService>();
+            services.AddScoped(c => store.OpenAsyncSession());
+            services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
+            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
+            services.AddScoped<ClassifiedAdsApplicationService>();
+            services.AddControllers();
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "My API", Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
 
             if (env.IsDevelopment())
             {
