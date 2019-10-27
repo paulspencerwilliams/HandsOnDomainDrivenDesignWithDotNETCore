@@ -37,11 +37,11 @@ namespace Marketplace.Infrastructure
         {
             builder.HasKey(x => x.ClassifiedAdId);
             builder.OwnsOne(x => x.Id);
-            builder.OwnsOne(x => x.Price, p => p.OwnsOne(c => c.Currency));
+            builder.OwnsOne(x => x.OwnerId);
             builder.OwnsOne(x => x.Text);
             builder.OwnsOne(x => x.Title);
+            builder.OwnsOne(x => x.Price, p => p.OwnsOne(c => c.Currency));
             builder.OwnsOne(x => x.ApprovedBy);
-            builder.OwnsOne(x => x.OwnerId);
         }
     }
 
