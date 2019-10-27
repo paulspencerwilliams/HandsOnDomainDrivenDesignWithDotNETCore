@@ -42,6 +42,10 @@ namespace Marketplace.Domain
             Currency = currency;
         }
 
+        protected Money()
+        {
+        }
+
         public Money Add(Money summand)
         {
             if (Currency != summand.Currency)

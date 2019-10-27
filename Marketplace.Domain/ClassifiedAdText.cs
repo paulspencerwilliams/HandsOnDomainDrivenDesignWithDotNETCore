@@ -10,5 +10,7 @@ namespace Marketplace.Domain
         
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
+        
+        protected ClassifiedAdText() { }
     }
 }
